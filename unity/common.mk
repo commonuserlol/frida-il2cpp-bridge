@@ -67,7 +67,7 @@ $(BUILD_DIR):
 download_using_changeset:
 ifneq "$(call TEST_EDITOR)" "YES"
 	@ $(ECHO) downloading editor...
-	@ $(CURL) https://netstorage.unity3d.com/unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity.tar.xz -O
+	@ $(CURL) https://download.unity3d.com/download_unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity-$(UNITY_VERSION).tar.xz -o Unity.tar.xz
 
 	@ $(ECHO) extracting editor...
 	@ tar -xf Unity.tar.xz
