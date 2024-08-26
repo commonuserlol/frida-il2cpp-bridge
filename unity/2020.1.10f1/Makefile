@@ -17,7 +17,7 @@ ASSEMBLY_TARGET_CMD = $(IL2CPP) \
 	--dotnetprofile=unityaot \
 	--cachedirectory="$(@D)/../buildstate" \
 	--generatedcppdir="$(<D)" \
-	--baselib-directory="$(EDITOR_DIR)/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/linux64_player_nondevelopment_il2cpp/" \
+	--baselib-directory="$(EDITOR_DIR)/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/linux64_headless_nondevelopment_il2cpp/" \
 	--outputpath="$@"
 
 CPP_TARGET_CMD = $(IL2CPP) \
