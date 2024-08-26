@@ -25,6 +25,7 @@ assembly: $(UNITY_DIRS);
 
 clean:
 	@ rm -r dist
+	@ rm -r unity/*/Editor
 
 .DEFAULT_GOAL := dist
 .PHONY: clean test assembly $(UNITY_DIRS)

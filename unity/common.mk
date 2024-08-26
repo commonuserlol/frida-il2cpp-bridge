@@ -1,6 +1,7 @@
 MAKEFLAGS += --no-builtin-rules
 
 VER_GTE = $(shell printf '%s\n' "$2" "$1" | sort -C -V && echo YES || echo NO)
+TEST_EDITOR = $(shell if [ -d '$(EDITOR_DIR)' ]; then echo YES; fi)
 
 THIS_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell realpath $(THIS_DIR)/../..)
@@ -13,9 +14,7 @@ MONOBL_DIR = $(EDITOR_DIR)/Data/MonoBleedingEdge
 IL2CPP_DIR = $(EDITOR_DIR)/Data/il2cpp
 
 MONO := $(MAYBE_STRACE) $(MONOBL_DIR)/bin/mono
-# MONO := mono
 MCS := $(MONO) $(MONOBL_DIR)/lib/mono/4.5/mcs.exe
-# MCS := mcs
 
 LINKER_DESCRIPTORS_DIR := $(IL2CPP_DIR)/LinkerDescriptors
 
@@ -34,6 +33,14 @@ CS_SRC := $(ROOT_DIR)/test/%.cs
 ECHO := echo -e "\e[1;34m$(UNITY_VERSION)\e[0m ►"
 CURL := curl -L -s -A "" --fail
 
+test_mono:
+	@ $(call $(MONO))
+ifneq "$(.SHELLSTATUS)" "1"
+	@ $(ECHO) using system-provided mono
+MONO := $(MAYBE_STRACE) mono
+MCS := mcs
+endif
+
 $(ASSEMBLY_TARGET): $(CPP_TARGET)
 	@ $(ECHO) compiling $(<F)
 	@ $(ASSEMBLY_TARGET_CMD)
@@ -49,6 +56,7 @@ $(LINKED_DLL_TARGET): $(DLL_TARGET)
 	@ touch "$@"
 
 $(DLL_TARGET): $(CS_SRC) $(EDITOR_DIR) $(BUILD_DIR)
+	@ $(test_mono)
 	@ $(ECHO) compiling $(<F)
 	@ mkdir -p "$(@D)"
 	@ $(DLL_TARGET_CMD)
@@ -57,6 +65,7 @@ $(BUILD_DIR):
 	@ mkdir -p "$@"
 
 download_using_changeset:
+ifneq "$(call TEST_EDITOR)" "YES"
 	@ $(ECHO) downloading editor...
 	@ $(CURL) https://netstorage.unity3d.com/unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity.tar.xz -O
 
@@ -75,6 +84,7 @@ ifeq "$(call VER_GTE,$(UNITY_VERSION),2019.4.0f1)" "YES"
 	@ touch -m Editor
 	
 	@ rm Support.tar.xz
+endif
 endif
 
 .PHONY: download_using_changeset
