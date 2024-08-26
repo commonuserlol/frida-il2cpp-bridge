@@ -38,3 +38,5 @@ LINKED_DLL_TARGET_CMD = $(UNITY_LINKER) \
 	--descriptor-directory="$(LINKER_DESCRIPTORS_DIR)" \
 	--include-assembly="$<,$(MSCORLIB)" \
 	--out="$(@D)"
+
+$(EDITOR_DIR): download_using_changeset

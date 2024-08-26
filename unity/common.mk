@@ -13,7 +13,9 @@ MONOBL_DIR = $(EDITOR_DIR)/Data/MonoBleedingEdge
 IL2CPP_DIR = $(EDITOR_DIR)/Data/il2cpp
 
 MONO := $(MAYBE_STRACE) $(MONOBL_DIR)/bin/mono
+# MONO := mono
 MCS := $(MONO) $(MONOBL_DIR)/lib/mono/4.5/mcs.exe
+# MCS := mcs
 
 LINKER_DESCRIPTORS_DIR := $(IL2CPP_DIR)/LinkerDescriptors
 
@@ -54,8 +56,7 @@ $(DLL_TARGET): $(CS_SRC) $(EDITOR_DIR) $(BUILD_DIR)
 $(BUILD_DIR):
 	@ mkdir -p "$@"
 
-ifdef $(UNITY_CHANGESET)
-$(EDITOR_DIR):
+download_using_changeset:
 	@ $(ECHO) downloading editor...
 	@ $(CURL) https://netstorage.unity3d.com/unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity.tar.xz -O
 
@@ -75,7 +76,8 @@ ifeq "$(call VER_GTE,$(UNITY_VERSION),2019.4.0f1)" "YES"
 	
 	@ rm Support.tar.xz
 endif
-endif
+
+.PHONY: download_using_changeset
 
 DLL_TARGET_CMD ?= $(MCS) \
 	-target:library \
