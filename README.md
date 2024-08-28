@@ -27,10 +27,12 @@ However, only Android and Linux are "tested": expect breakage if you are using a
 
 ## Acknowledgements
 
-Thanks to [meme](https://github.com/meme) and [knobse](https://github.com/knobse) for helping and getting me into this,
-and to [djkaty](https://github.com/djkaty) and [nneonneo](https://github.com/nneonneo) for providing the Il2Cpp
-API.
+Thanks to [vfsfitnvm](https://github.com/vfsfitvnm/frida-il2cpp-bridge) for original frida-il2cpp-bridge code
 
-## Problems?
+## License
 
-Discussions and Wiki are both active. Use them!
+Commits made in this fork are licensed under the GNU AGPLv3.0
+
+Read [LICENSE](LICENSE.AGPLv3) for more information
+
+Commits made in the original repository are licensed under [MIT](LICENSE.MIT)
