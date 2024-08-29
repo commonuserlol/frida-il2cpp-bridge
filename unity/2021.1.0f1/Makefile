@@ -1,10 +1,10 @@
 include ../common.mk
 
-UNITY_CHANGESET := 6e9a27477296
-UNITY_LINKER := $(MONO) $(IL2CPP_DIR)/build/UnityLinker.exe
-IL2CPP := $(MONO) $(IL2CPP_DIR)/build/il2cpp.exe
+UNITY_CHANGESET := 61a549675243
+UNITY_LINKER := DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 $(IL2CPP_DIR)/build/deploy/netcoreapp3.1/UnityLinker
+IL2CPP := DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 $(IL2CPP_DIR)/build/deploy/netcoreapp3.1/il2cpp
 
-MSCORLIB := $(MONO_DIR)/lib/mono/2.0/mscorlib.dll
+MSCORLIB := $(MONOBL_DIR)/lib/mono/unityaot/mscorlib.dll
 
 export TERM = xterm
 
@@ -14,9 +14,10 @@ ASSEMBLY_TARGET_CMD = $(IL2CPP) \
 	--configuration=Release \
 	--platform=Linux \
 	--architecture=x64 \
-	--dotnetprofile=net20 \
+	--dotnetprofile=unityaot \
 	--cachedirectory="$(@D)/../buildstate" \
 	--generatedcppdir="$(<D)" \
+	--baselib-directory="$(EDITOR_DIR)/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/linux64_headless_nondevelopment_il2cpp/" \
 	--outputpath="$@"
 
 CPP_TARGET_CMD = $(IL2CPP) \
@@ -24,16 +25,20 @@ CPP_TARGET_CMD = $(IL2CPP) \
 	--emit-null-checks \
 	--enable-array-bounds-check \
 	--copy-level=None \
-	--dotnetprofile=net20 \
+	--dotnetprofile=unityaot \
 	--directory="$(<D)" \
 	--generatedcppdir="$(@D)"
 
 LINKED_DLL_TARGET_CMD = $(UNITY_LINKER) \
 	--i18n=none \
-	--disable-keep-facades \
+	--silent \
 	--core-action=link \
+	--strip-security \
+	--rule-set=aggressive \
 	--dotnetruntime=il2cpp \
-	--dotnetprofile=net20 \
+	--dotnetprofile=unityaot \
 	--descriptor-directory="$(LINKER_DESCRIPTORS_DIR)" \
 	--include-assembly="$<,$(MSCORLIB)" \
 	--out="$(@D)"
+
+$(EDITOR_DIR): download_using_changeset

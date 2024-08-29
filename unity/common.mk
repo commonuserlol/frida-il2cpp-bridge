@@ -1,6 +1,7 @@
 MAKEFLAGS += --no-builtin-rules
 
 VER_GTE = $(shell printf '%s\n' "$2" "$1" | sort -C -V && echo YES || echo NO)
+TEST_EDITOR = $(shell if [ -d '$(EDITOR_DIR)' ]; then echo YES; fi)
 
 THIS_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell realpath $(THIS_DIR)/../..)
@@ -32,6 +33,14 @@ CS_SRC := $(ROOT_DIR)/test/%.cs
 ECHO := echo -e "\e[1;34m$(UNITY_VERSION)\e[0m ►"
 CURL := curl -L -s -A "" --fail
 
+test_mono:
+	@ $(call $(MONO))
+ifneq "$(.SHELLSTATUS)" "1"
+	@ $(ECHO) using system-provided mono
+MONO := $(MAYBE_STRACE) mono
+MCS := mcs
+endif
+
 $(ASSEMBLY_TARGET): $(CPP_TARGET)
 	@ $(ECHO) compiling $(<F)
 	@ $(ASSEMBLY_TARGET_CMD)
@@ -47,6 +56,7 @@ $(LINKED_DLL_TARGET): $(DLL_TARGET)
 	@ touch "$@"
 
 $(DLL_TARGET): $(CS_SRC) $(EDITOR_DIR) $(BUILD_DIR)
+	@ $(test_mono)
 	@ $(ECHO) compiling $(<F)
 	@ mkdir -p "$(@D)"
 	@ $(DLL_TARGET_CMD)
@@ -54,10 +64,10 @@ $(DLL_TARGET): $(CS_SRC) $(EDITOR_DIR) $(BUILD_DIR)
 $(BUILD_DIR):
 	@ mkdir -p "$@"
 
-ifdef $(UNITY_CHANGESET)
-$(EDITOR_DIR):
+download_using_changeset:
+ifneq "$(call TEST_EDITOR)" "YES"
 	@ $(ECHO) downloading editor...
-	@ $(CURL) https://netstorage.unity3d.com/unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity.tar.xz -O
+	@ $(CURL) https://download.unity3d.com/download_unity/$(UNITY_CHANGESET)/LinuxEditorInstaller/Unity-$(UNITY_VERSION).tar.xz -o Unity.tar.xz
 
 	@ $(ECHO) extracting editor...
 	@ tar -xf Unity.tar.xz
@@ -76,6 +86,8 @@ ifeq "$(call VER_GTE,$(UNITY_VERSION),2019.4.0f1)" "YES"
 	@ rm Support.tar.xz
 endif
 endif
+
+.PHONY: download_using_changeset
 
 DLL_TARGET_CMD ?= $(MCS) \
 	-target:library \

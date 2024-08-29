@@ -37,6 +37,7 @@ LINKED_DLL_TARGET_CMD = $(UNITY_LINKER) \
 	-out "$(@D)"
 
 $(EDITOR_DIR):
+ifneq "$(call TEST_EDITOR)" "YES"
 	@ $(ECHO) downloading editor...
 	@ curl -L -s -A "" --fail "http://download.unity3d.com/download_unity/linux/unity-editor-5.3.5f1+20160525_amd64.deb" -o editor.deb
 
@@ -47,3 +48,4 @@ $(EDITOR_DIR):
 	@ ar t editor.deb | xargs rm
 	@ rm editor.deb
 	@ touch -m Editor
+endif

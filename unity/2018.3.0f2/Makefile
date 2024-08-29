@@ -1,10 +1,12 @@
 include ../common.mk
 
-UNITY_CHANGESET := 4bf1ec4b23c9
-UNITY_LINKER := $(MAYBE_STRACE) $(IL2CPP_DIR)/build/deploy/UnityLinker
-IL2CPP := $(MAYBE_STRACE) $(IL2CPP_DIR)/build/deploy/il2cpp
+UNITY_CHANGESET := 6e9a27477296
+UNITY_LINKER := $(MONO) $(IL2CPP_DIR)/build/UnityLinker.exe
+IL2CPP := $(MONO) $(IL2CPP_DIR)/build/il2cpp.exe
 
-MSCORLIB := $(MONOBL_DIR)/lib/mono/unityaot-linux/mscorlib.dll
+MSCORLIB := $(MONO_DIR)/lib/mono/2.0/mscorlib.dll
+
+export TERM = xterm
 
 ASSEMBLY_TARGET_CMD = $(IL2CPP) \
 	--compile-cpp \
@@ -12,29 +14,26 @@ ASSEMBLY_TARGET_CMD = $(IL2CPP) \
 	--configuration=Release \
 	--platform=Linux \
 	--architecture=x64 \
-	--dotnetprofile=unityaot-linux \
-	--cachedirectory="$(@D)/.." \
+	--dotnetprofile=net20 \
+	--cachedirectory="$(@D)/../buildstate" \
 	--generatedcppdir="$(<D)" \
-	--baselib-directory="$(EDITOR_DIR)/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/linux64_player_nondevelopment_il2cpp/" \
 	--outputpath="$@"
 
 CPP_TARGET_CMD = $(IL2CPP) \
 	--convert-to-cpp \
 	--emit-null-checks \
 	--enable-array-bounds-check \
-	--dotnetprofile=unityaot-linux \
 	--copy-level=None \
+	--dotnetprofile=net20 \
 	--directory="$(<D)" \
 	--generatedcppdir="$(@D)"
 
 LINKED_DLL_TARGET_CMD = $(UNITY_LINKER) \
-	--silent \
 	--i18n=none \
+	--disable-keep-facades \
 	--core-action=link \
-	--strip-security \
-	--rule-set=aggressive \
 	--dotnetruntime=il2cpp \
-	--dotnetprofile=unityaot-linux \
+	--dotnetprofile=net20 \
 	--descriptor-directory="$(LINKER_DESCRIPTORS_DIR)" \
 	--include-assembly="$<,$(MSCORLIB)" \
 	--out="$(@D)"

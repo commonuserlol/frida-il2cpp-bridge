@@ -1,6 +1,6 @@
 include ../common.mk
 
-UNITY_CHANGESET := 4bf1ec4b23c9
+UNITY_CHANGESET := b2c853adf198
 UNITY_LINKER := $(MAYBE_STRACE) $(IL2CPP_DIR)/build/deploy/UnityLinker
 IL2CPP := $(MAYBE_STRACE) $(IL2CPP_DIR)/build/deploy/il2cpp
 

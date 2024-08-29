@@ -48,7 +48,9 @@ for (const unityVersion of unityVersions) {
     await frida.resume(host);
     await tests;
     await script.unload();
-    await frida.kill(host);
+    try {
+        await frida.kill(host);
+    } catch (_) {}
 }
 
 if (summary.failed > 0) {
