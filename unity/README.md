@@ -17,6 +17,6 @@
 |  [2021.2.0](2021.2.0f1/)  |        29        | ✔ (workaround) |
 |  [2023.1.0](2023.1.0f1/)  |       29.1       |       ✔        |
 |  [2023.2.0](2023.2.0f1/)  |       29.2       |       ✔        |
-| [2022.3.33](2022.3.33f1/) |        31        | ✔ (workaround) |
+| [6000.0.10](6000.0.10f1/) |        31        |       ✔        |
 
 **NOTE**: Tests for versions marked with `workaround` must be invoked using `./unity/monitor.sh & make unity/x.y.z/`. Thus, **DO NOT** launch `make unity/*/`
