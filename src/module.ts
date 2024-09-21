@@ -27,7 +27,7 @@ namespace Il2Cpp {
     getter(Il2Cpp, "module", () => {
         const [moduleName, fallback] = getExpectedModuleNames();
         return Process.findModuleByName(moduleName) ?? Process.getModuleByName(fallback);
-    });
+    }, lazy);
 
     /**
      * @internal
