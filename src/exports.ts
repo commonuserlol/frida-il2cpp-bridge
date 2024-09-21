@@ -6,7 +6,7 @@ namespace Il2Cpp {
      * easy-to-use abstraction layer: the user isn't expected to use it directly,
      * but it can in case of advanced use cases.
      *
-     * The APIs depends on the Unity version, hence some of them may be
+     * The exports depends on the Unity version, hence some of them may be
      * unavailable; moreover, they are searched by **name** (e.g.
      * `il2cpp_class_from_name`) hence they might get stripped, hidden or
      * renamed by a nasty obfuscator.
@@ -30,7 +30,7 @@ namespace Il2Cpp {
      * });
      * ```
      */
-    export const api = {
+    export const exports = {
         get alloc() {
             return r("il2cpp_alloc", "pointer", ["size_t"]);
         },
@@ -520,16 +520,22 @@ namespace Il2Cpp {
         }
     };
 
-    decorate(api, lazy);
+    decorate(exports, lazy);
 
     /** @internal */
-    export declare const memorySnapshotApi: CModule;
-    getter(Il2Cpp, "memorySnapshotApi", () => new CModule($inline_file("cmodules/memory-snapshot.c")), lazy);
+    export declare const memorySnapshotExports: CModule;
+    getter(Il2Cpp, "memorySnapshotExports", () => new CModule($inline_file("cmodules/memory-snapshot.c")), lazy);
 
     function r<R extends NativeFunctionReturnType, A extends NativeFunctionArgumentType[] | []>(exportName: string, retType: R, argTypes: A) {
-        const handle = (globalThis as any).IL2CPP_EXPORTS?.[exportName]?.() ?? Il2Cpp.module.findExportByName(exportName) ?? memorySnapshotApi[exportName];
+        const handle = (globalThis as any).IL2CPP_EXPORTS?.[exportName]?.() ?? Il2Cpp.module.findExportByName(exportName) ?? memorySnapshotExports[exportName];
 
-        return new NativeFunction(handle ?? raise(`couldn't resolve export ${exportName}`), retType, argTypes);
+        const target = new NativeFunction(handle ?? raise(`couldn't resolve export ${exportName}`), retType, argTypes);
+
+        if (target.isNull()) {
+            raise(`export ${exportName} points to NULL IL2CPP library has likely been stripped, obfuscated, or customized`)
+        }
+
+        return target;
     }
 
     declare const $inline_file: typeof import("ts-transformer-inline-file").$INLINE_FILE;
