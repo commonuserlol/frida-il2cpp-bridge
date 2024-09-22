@@ -144,6 +144,26 @@ namespace Il2Cpp {
             }
 
             switch (type.typeEnum) {
+                case Il2Cpp.Type.enum.byte:
+                    return value.add(Il2Cpp.Object.headerSize).readS8();
+                case Il2Cpp.Type.enum.unsignedByte:
+                    return value.add(Il2Cpp.Object.headerSize).readU8();
+                case Il2Cpp.Type.enum.short:
+                    return value.add(Il2Cpp.Object.headerSize).readS16();
+                case Il2Cpp.Type.enum.unsignedShort:
+                    return value.add(Il2Cpp.Object.headerSize).readU16();
+                case Il2Cpp.Type.enum.int:
+                    return value.add(Il2Cpp.Object.headerSize).readS32();
+                case Il2Cpp.Type.enum.unsignedInt:
+                    return value.add(Il2Cpp.Object.headerSize).readU32();
+                case Il2Cpp.Type.enum.long:
+                    return value.add(Il2Cpp.Object.headerSize).readS64();
+                case Il2Cpp.Type.enum.unsignedLong:
+                    return value.add(Il2Cpp.Object.headerSize).readU64();
+                case Il2Cpp.Type.enum.float:
+                    return value.add(Il2Cpp.Object.headerSize).readFloat();
+                case Il2Cpp.Type.enum.double:
+                    return value.add(Il2Cpp.Object.headerSize).readDouble();
                 case Il2Cpp.Type.enum.pointer:
                     return new Il2Cpp.Pointer(value, type.class.baseType!);
                 case Il2Cpp.Type.enum.string:
@@ -152,6 +172,10 @@ namespace Il2Cpp {
                 case Il2Cpp.Type.enum.genericInstance:
                 case Il2Cpp.Type.enum.object:
                     return new Il2Cpp.Object(value);
+                case Il2Cpp.Type.enum.valueType:
+                    return new Il2Cpp.Object(value).unbox();
+                case Il2Cpp.Type.enum.nativePointer:
+                    return new Il2Cpp.Object(value).field<NativePointer>("m_value").value;
                 case Il2Cpp.Type.enum.array:
                 case Il2Cpp.Type.enum.multidimensionalArray:
                     return new Il2Cpp.Array(value);

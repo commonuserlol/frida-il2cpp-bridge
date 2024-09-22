@@ -1,3 +1,4 @@
+/// <reference path="./utils/alloc-native-parameter.ts">/>
 /// <reference path="./utils/android.ts">/>
 /// <reference path="./utils/console.ts">/>
 /// <reference path="./utils/decorate.ts">/>

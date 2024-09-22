@@ -467,6 +467,10 @@ namespace Il2Cpp {
             return r("il2cpp_resolve_icall", "pointer", ["pointer"]);
         },
 
+        get runtimeInvoke() {
+            return r("il2cpp_runtime_invoke", "pointer", ["pointer", "pointer", "pointer", "pointer"]);
+        },
+
         get stringGetChars() {
             return r("il2cpp_string_chars", "pointer", ["pointer"]);
         },
@@ -532,7 +536,7 @@ namespace Il2Cpp {
         const target = new NativeFunction(handle ?? raise(`couldn't resolve export ${exportName}`), retType, argTypes);
 
         if (target.isNull()) {
-            raise(`export ${exportName} points to NULL IL2CPP library has likely been stripped, obfuscated, or customized`)
+            raise(`export ${exportName} points to NULL IL2CPP library has likely been stripped, obfuscated, or customized`);
         }
 
         return target;

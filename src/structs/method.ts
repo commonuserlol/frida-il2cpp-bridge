@@ -220,35 +220,27 @@ namespace Il2Cpp {
 
         /** @internal */
         invokeRaw(instance: NativePointerValue, ...parameters: Il2Cpp.Parameter.Type[]): T {
-            const allocatedParameters = parameters.map(toFridaValue);
+            // Frida will deallocate parameter after `writePointer` call
+            // So it will be invalid and method invocation will fail
+            const holder = [];
 
-            if (!this.isStatic || Il2Cpp.unityVersionIsBelow201830) {
-                allocatedParameters.unshift(instance);
+            let allocatedParameters = NULL;
+            if (parameters.length !== 0) {
+                allocatedParameters = Memory.alloc(Process.pointerSize * parameters.length);
+                parameters.forEach((p, i) => {
+                    const handle = allocNativeParameter(p, this.parameters[i].type);
+                    holder.push(handle);
+                    allocatedParameters.add(i * Process.pointerSize).writePointer(handle);
+                });
             }
 
-            if (this.isInflated) {
-                allocatedParameters.push(this.handle);
-            }
+            const exceptionPointer = Memory.alloc(Process.pointerSize).writePointer(NULL);
+            const returnValue = Il2Cpp.exports.runtimeInvoke(this, instance, allocatedParameters, exceptionPointer);
+            const exception = exceptionPointer.readPointer();
 
-            try {
-                const returnValue = this.nativeFunction(...allocatedParameters);
-                return fromFridaValue(returnValue, this.returnType) as T;
-            } catch (e: any) {
-                if (e == null) {
-                    raise("an unexpected native invocation exception occurred, this is due to parameter types mismatch");
-                }
+            if (!exception.isNull()) return raise(new Il2Cpp.Object(exception).toString());
 
-                switch (e.message) {
-                    case "bad argument count":
-                        raise(`couldn't invoke method ${this.name} as it needs ${this.parameterCount} parameter(s), not ${parameters.length}`);
-                    case "expected a pointer":
-                    case "expected number":
-                    case "expected array with fields":
-                        raise(`couldn't invoke method ${this.name} using incorrect parameter types`);
-                }
-
-                throw e;
-            }
+            return fromFridaValue(returnValue, this.returnType) as T;
         }
 
         /** Gets the overloaded method with the given parameter types. */
@@ -277,9 +269,9 @@ namespace Il2Cpp {
             while (klass) {
                 const method = klass.methods.find(method => {
                     return (
-                      method.name == this.name &&
-                      method.parameterCount == parameterTypes.length &&
-                      method.parameters.every((e, i) => e.type.name == parameterTypes[i])
+                        method.name == this.name &&
+                        method.parameterCount == parameterTypes.length &&
+                        method.parameters.every((e, i) => e.type.name == parameterTypes[i])
                     );
                 }) as Il2Cpp.Method<U> | undefined;
                 if (method) {
