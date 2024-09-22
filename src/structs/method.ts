@@ -225,7 +225,7 @@ namespace Il2Cpp {
             const holder = [];
 
             let allocatedParameters = NULL;
-            if (parameters.length !== 0) {
+            if (this.parameters.length > 0) {
                 allocatedParameters = Memory.alloc(Process.pointerSize * parameters.length);
                 parameters.forEach((p, i) => {
                     const handle = allocNativeParameter(p, this.parameters[i].type);

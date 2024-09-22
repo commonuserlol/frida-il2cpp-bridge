@@ -76,8 +76,8 @@ Il2Cpp.perform(() => {
     });
 
     test("Il2Cpp.Image::classCount", () => {
-        assert(16, () => Il2Cpp.domain.assembly("GameAssembly").image.classes.length);
-        assert(16, () => Il2Cpp.domain.assembly("GameAssembly").image.classCount);
+        assert(17, () => Il2Cpp.domain.assembly("GameAssembly").image.classes.length);
+        assert(17, () => Il2Cpp.domain.assembly("GameAssembly").image.classCount);
     });
 
     test("Il2Cpp.Class::image", () => {
@@ -237,6 +237,24 @@ Il2Cpp.perform(() => {
             array.set(4, 2147483647);
             return array.get(4);
         });
+    });
+
+    test("Invoking a method with a primive parameter", () => {
+        const PrimitivesTests = Il2Cpp.domain.assembly("GameAssembly").image.class("PrimitivesTests");
+        assert(0x42, () => PrimitivesTests.method("ByteMethod").invoke());
+        assert(2, () => PrimitivesTests.method("ByteArgumentMethod").invoke(7));
+        assert(1337, () => PrimitivesTests.method("ShortMethod").invoke());
+        assert(34, () => PrimitivesTests.method("ShortArgumentMethod").invoke(42));
+        assert(42, () => PrimitivesTests.method("IntMethod").invoke());
+        assert(2, () => PrimitivesTests.method("IntArgumentMethod").invoke(7));
+        assert(1337, () => PrimitivesTests.method("LongMethod").invoke());
+        assert(34, () => PrimitivesTests.method("LongArgumentMethod").invoke(42));
+        assert(3.140000104904175, () => PrimitivesTests.method("FloatMethod").invoke());
+        assert(6.28000020980835, () => PrimitivesTests.method("FloatArgumentMethod").invoke(3.14));
+        assert(3.1416, () => PrimitivesTests.method("DoubleMethod").invoke());
+        assert(12.5664, () => PrimitivesTests.method("DoubleArgumentMethod").invoke(3.1416));
+        assert(ptr(0xdeadbeef), () => PrimitivesTests.method("IntPtrMethod").invoke());
+        assert(ptr(0xdead80ce), () => PrimitivesTests.method("IntPtrArgumentMethod").invoke(ptr(0xdeadbeef)));
     });
 
     test("Every enum base type matches its 'value__' field type", () => {
@@ -422,7 +440,7 @@ function test(name, block) {
         send(`  \x1b[32m\x1b[1m✓\x1b[22m ${name}\x1b[0m \x1b[2m${duration}ms\x1b[0m`);
         summary.passed++;
     } catch (e) {
-        send(`  \x1b[31m\x1b[1m𐄂\x1b[22m ${name}\n    ${e.message}\x1b[0m`);
+        send(`  \x1b[31m\x1b[1m𐄂\x1b[22m ${name}\n    ${e.stack}\x1b[0m`);
         summary.failed++;
     }
 }
