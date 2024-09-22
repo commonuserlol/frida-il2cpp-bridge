@@ -241,20 +241,50 @@ Il2Cpp.perform(() => {
 
     test("Invoking a method with a primive parameter", () => {
         const PrimitivesTests = Il2Cpp.domain.assembly("GameAssembly").image.class("PrimitivesTests");
-        assert(0x42, () => PrimitivesTests.method("ByteMethod").invoke());
-        assert(2, () => PrimitivesTests.method("ByteArgumentMethod").invoke(7));
-        assert(1337, () => PrimitivesTests.method("ShortMethod").invoke());
-        assert(34, () => PrimitivesTests.method("ShortArgumentMethod").invoke(42));
-        assert(42, () => PrimitivesTests.method("IntMethod").invoke());
-        assert(2, () => PrimitivesTests.method("IntArgumentMethod").invoke(7));
-        assert(1337, () => PrimitivesTests.method("LongMethod").invoke());
-        assert(34, () => PrimitivesTests.method("LongArgumentMethod").invoke(42));
+        assert(true, () => PrimitivesTests.method("BoolMethod").invoke());
+        assert(false, () => PrimitivesTests.method("BoolArgumentMethod").invoke(true));
+
+        assert(-1, () => PrimitivesTests.method("SByteMethod").invoke());
+        assert(0, () => PrimitivesTests.method("SByteArgumentMethod").invoke(0xff));
+
+        assert(0xff, () => PrimitivesTests.method("ByteMethod").invoke());
+        assert(0, () => PrimitivesTests.method("ByteArgumentMethod").invoke(0xff));
+
+        assert(-1, () => PrimitivesTests.method("ShortMethod").invoke());
+        assert(0, () => PrimitivesTests.method("ShortArgumentMethod").invoke(0xffff));
+
+        assert(0xffff, () => PrimitivesTests.method("UShortMethod").invoke());
+        assert(65280, () => PrimitivesTests.method("UShortArgumentMethod").invoke(0xff));
+
+        assert(-1, () => PrimitivesTests.method("IntMethod").invoke());
+        assert(-4096, () => PrimitivesTests.method("IntArgumentMethod").invoke(0xfff));
+
+        assert(0xffffffff, () => PrimitivesTests.method("UIntMethod").invoke());
+        assert(4293918720, () => PrimitivesTests.method("UIntArgumentMethod").invoke(0xfffff));
+
+        assert(0xffffffffff, () => PrimitivesTests.method("LongMethod").invoke());
+        assert(-1048576, () => PrimitivesTests.method("LongArgumentMethod").invoke(0xfffff));
+
+        assert(1099511627775, () => PrimitivesTests.method("ULongMethod").invoke());
+        assert(true, () => uint64("18446726481523507200").equals(PrimitivesTests.method("ULongArgumentMethod").invoke(0xfffffffffff)));
+
         assert(3.140000104904175, () => PrimitivesTests.method("FloatMethod").invoke());
         assert(6.28000020980835, () => PrimitivesTests.method("FloatArgumentMethod").invoke(3.14));
+
         assert(3.1416, () => PrimitivesTests.method("DoubleMethod").invoke());
         assert(12.5664, () => PrimitivesTests.method("DoubleArgumentMethod").invoke(3.1416));
+
         assert(ptr(0xdeadbeef), () => PrimitivesTests.method("IntPtrMethod").invoke());
         assert(ptr(0xdead80ce), () => PrimitivesTests.method("IntPtrArgumentMethod").invoke(ptr(0xdeadbeef)));
+
+        assert("frida-il2cpp-bridge", () => PrimitivesTests.method("StringMethod").invoke().content);
+        assert("FRIDA-IL2CPP-BRIDGE", () => PrimitivesTests.method("StringArgumentMethod").invoke(Il2Cpp.string("frida-il2cpp-bridge")).content);
+
+        assert(42, () => PrimitivesTests.method("StructMethod").invoke().field("a").value);
+        assert(43, () => PrimitivesTests.method("StructArgumentMethod").invoke(PrimitivesTests.method("StructMethod").invoke()).field("a").value);
+
+        assert(1, () => PrimitivesTests.method("EnumMethod").invoke().field("value__").value);
+        assert(2, () => PrimitivesTests.method("EnumArgumentMethod").invoke(PrimitivesTests.method("EnumMethod").invoke()).field("value__").value);
     });
 
     test("Every enum base type matches its 'value__' field type", () => {
@@ -383,27 +413,41 @@ Il2Cpp.perform(() => {
         assert(["F", "r", "i", "d", "a"], () => {
             const ArrayMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("ArrayMethod");
             return Array.from(ArrayMethod.invoke()).map(_ => String.fromCodePoint(_));
-        })
+        });
     });
 
     test("Invoke a method that takes an array value", () => {
         const ArrayMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("ArrayArgumentMethod");
         assert(false, () => ArrayMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Char"), [])));
-        assert(true, () => ArrayMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Char"), ["F", "r", "i", "d", "a"].map(_ => _.charCodeAt(0)))));
+        assert(true, () =>
+            ArrayMethod.invoke(
+                Il2Cpp.array(
+                    Il2Cpp.corlib.class("System.Char"),
+                    ["F", "r", "i", "d", "a"].map(_ => _.charCodeAt(0))
+                )
+            )
+        );
     });
 
     test("Invoke a method that returns a multidimensional array value", () => {
         const Array2DMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("Array2DMethod");
-        assert([[1,3,3,7],[6,6,6],[4,2]], () => Array.from(Array2DMethod.invoke()).map(_ => Array.from(_)));
+        assert(
+            [
+                [1, 3, 3, 7],
+                [6, 6, 6],
+                [4, 2]
+            ],
+            () => Array.from(Array2DMethod.invoke()).map(_ => Array.from(_))
+        );
     });
 
     test("Invoke a method that takes a multidimensional array value", () => {
         const Array2DMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("Array2DArgumentMethod");
         assert(false, () => Array2DMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [])));
         assert(true, () => {
-            const firstArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [1,3,3,7]);
-            const secondArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [6,6,6]);
-            const thirdArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [4,2]);
+            const firstArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [1, 3, 3, 7]);
+            const secondArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [6, 6, 6]);
+            const thirdArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [4, 2]);
             return Array2DMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Int32").arrayClass, [firstArray, secondArray, thirdArray]));
         });
     });

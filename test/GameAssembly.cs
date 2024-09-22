@@ -59,44 +59,94 @@ class Class : Interface
 
 class PrimitivesTests
 {
+    static bool BoolMethod()
+    {
+        return true;
+    }
+
+    static bool BoolArgumentMethod(bool b)
+    {
+        return !b;
+    }
+
+    static sbyte SByteMethod()
+    {
+        unchecked { return (sbyte)0xFF; }
+    }
+
+    static sbyte SByteArgumentMethod(sbyte b)
+    {
+        return (sbyte)(~b);
+    }
+
     static byte ByteMethod()
     {
-        return 0x42;
+        return 0xFF;
     }
 
     static byte ByteArgumentMethod(byte b)
     {
-        return (byte)(b & 0x42);
+        return (byte)(~b);
     }
 
     static short ShortMethod()
     {
-        return 1337;
+        unchecked { return (short)0xFFFF; }
     }
 
     static short ShortArgumentMethod(short s)
     {
-        return (short)(s & 0x1337);
+        return (short)(~s);
+    }
+
+    static ushort UShortMethod()
+    {
+        return 0xFFFF;
+    }
+
+    static ushort UShortArgumentMethod(ushort s)
+    {
+        return (ushort)(~s);
     }
 
     static int IntMethod()
     {
-        return 42;
+        unchecked { return (int)0xFFFFFFFF; }
     }
 
     static int IntArgumentMethod(int i)
     {
-        return i & 0x42;
+        return ~i;
+    }
+
+    static uint UIntMethod()
+    {
+        return 0xFFFFFFFF;
+    }
+
+    static uint UIntArgumentMethod(uint i)
+    {
+        return ~i;
     }
 
     static long LongMethod()
     {
-        return 1337;
+        return 0xFFFFFFFFFF;
     }
 
     static long LongArgumentMethod(long l)
     {
-        return l & 0x1337;
+        return ~l;
+    }
+
+    static ulong ULongMethod()
+    {
+        return 0xFFFFFFFFFF;
+    }
+
+    static ulong ULongArgumentMethod(ulong l)
+    {
+        return ~l;
     }
 
     static float FloatMethod()
@@ -128,6 +178,37 @@ class PrimitivesTests
     {
         return (IntPtr)(p.ToInt64() & 0xdeadc0de);
     }
+
+    static string StringMethod()
+    {
+        return "frida-il2cpp-bridge";
+    }
+
+    static string StringArgumentMethod(string s)
+    {
+        return s.ToUpperInvariant();
+    }
+
+    static Struct StructMethod()
+    {
+        return new Struct(42);
+    }
+
+    static Struct StructArgumentMethod(Struct s)
+    {
+        s.a = (byte)(s.a + 1);
+        return s;
+    }
+
+    static Enum EnumMethod()
+    {
+        return Enum.Second;
+    }
+
+    static Enum EnumArgumentMethod(Enum e)
+    {
+        return (Enum)((int)e + 1);
+    }
 }
 
 abstract class AbstractGenericClass<T, U>
@@ -147,7 +228,12 @@ class InflatedClass : AbstractGenericClass<String, String>
 
 struct Struct
 {
+    public byte a;
 
+    public Struct(byte a)
+    {
+        this.a = a;
+    }
 }
 
 struct EmptyStruct
