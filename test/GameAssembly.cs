@@ -24,6 +24,30 @@ class Class : Interface
 
     }
 
+    static char[] ArrayMethod()
+    {
+        return "Frida".ToCharArray();
+    }
+
+    static bool ArrayArgumentMethod(char[] array)
+    {
+        return array.Length > 0;
+    }
+
+    static int[][] Array2DMethod()
+    {
+        return new int[][] {
+            new int[] { 1, 3, 3, 7 },
+            new int[] { 6, 6, 6 },
+            new int[] { 4, 2 }
+        };
+    }
+
+    static bool Array2DArgumentMethod(int[][] array)
+    {
+        return array.Length > 0 && array[0].Length > 0 && array[1].Length > 0 && array[2].Length > 0;
+    }
+
     class InnerClass
     {
         class InnerInnerClass

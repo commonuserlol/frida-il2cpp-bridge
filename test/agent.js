@@ -76,8 +76,8 @@ Il2Cpp.perform(() => {
     });
 
     test("Il2Cpp.Image::classCount", () => {
-        assert(13, () => Il2Cpp.domain.assembly("GameAssembly").image.classes.length);
-        assert(13, () => Il2Cpp.domain.assembly("GameAssembly").image.classCount);
+        assert(16, () => Il2Cpp.domain.assembly("GameAssembly").image.classes.length);
+        assert(16, () => Il2Cpp.domain.assembly("GameAssembly").image.classCount);
     });
 
     test("Il2Cpp.Class::image", () => {
@@ -358,6 +358,35 @@ Il2Cpp.perform(() => {
             const DateTimeFormatInfo = Il2Cpp.corlib.class("System.Globalization.DateTimeFormatInfo").initialize();
             const DayOfWeek = Il2Cpp.corlib.class("System.DayOfWeek");
             return DateTimeFormatInfo.new().method("GetDayName").invoke(DayOfWeek.field("Sunday").value).content;
+        });
+    });
+
+    test("Invoke a method that returns an array value", () => {
+        assert(["F", "r", "i", "d", "a"], () => {
+            const ArrayMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("ArrayMethod");
+            return Array.from(ArrayMethod.invoke()).map(_ => String.fromCodePoint(_));
+        })
+    });
+
+    test("Invoke a method that takes an array value", () => {
+        const ArrayMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("ArrayArgumentMethod");
+        assert(false, () => ArrayMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Char"), [])));
+        assert(true, () => ArrayMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Char"), ["F", "r", "i", "d", "a"].map(_ => _.charCodeAt(0)))));
+    });
+
+    test("Invoke a method that returns a multidimensional array value", () => {
+        const Array2DMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("Array2DMethod");
+        assert([[1,3,3,7],[6,6,6],[4,2]], () => Array.from(Array2DMethod.invoke()).map(_ => Array.from(_)));
+    });
+
+    test("Invoke a method that takes a multidimensional array value", () => {
+        const Array2DMethod = Il2Cpp.domain.assembly("GameAssembly").image.class("Class").method("Array2DArgumentMethod");
+        assert(false, () => Array2DMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [])));
+        assert(true, () => {
+            const firstArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [1,3,3,7]);
+            const secondArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [6,6,6]);
+            const thirdArray = Il2Cpp.array(Il2Cpp.corlib.class("System.Int32"), [4,2]);
+            return Array2DMethod.invoke(Il2Cpp.array(Il2Cpp.corlib.class("System.Int32").arrayClass, [firstArray, secondArray, thirdArray]));
         });
     });
 

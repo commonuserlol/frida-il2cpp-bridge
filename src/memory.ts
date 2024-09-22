@@ -144,6 +144,8 @@ namespace Il2Cpp {
             }
 
             switch (type.typeEnum) {
+                case Il2Cpp.Type.enum.boolean:
+                    return !!value.add(Il2Cpp.Object.headerSize).readS8();
                 case Il2Cpp.Type.enum.byte:
                     return value.add(Il2Cpp.Object.headerSize).readS8();
                 case Il2Cpp.Type.enum.unsignedByte:

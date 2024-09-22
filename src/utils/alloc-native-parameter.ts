@@ -29,7 +29,6 @@ function allocNativeParameter(value: any, type: Il2Cpp.Type) {
         case Il2Cpp.Type.enum.unsignedNativePointer:
         case Il2Cpp.Type.enum.pointer:
         case Il2Cpp.Type.enum.string:
-        case Il2Cpp.Type.enum.multidimensionalArray:
             return Memory.alloc(Process.pointerSize).writePointer(value);
         case Il2Cpp.Type.enum.valueType:
             return Memory.dup(value, type.class.valueTypeSize);
@@ -38,6 +37,7 @@ function allocNativeParameter(value: any, type: Il2Cpp.Type) {
         case Il2Cpp.Type.enum.genericInstance:
             return value instanceof Il2Cpp.ValueType ? Memory.dup(value, type.class.valueTypeSize) : Memory.alloc(Process.pointerSize).writePointer(value);
         case Il2Cpp.Type.enum.array:
+        case Il2Cpp.Type.enum.multidimensionalArray:
             return value;
     }
 }
