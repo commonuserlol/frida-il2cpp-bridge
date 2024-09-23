@@ -24,7 +24,7 @@
         "dist"
     ],
     "scripts": {
-        "prepare": "make dist"
+        "prepare": "tspc"
     },
     "prettier": {
         "arrowParens": "avoid",
